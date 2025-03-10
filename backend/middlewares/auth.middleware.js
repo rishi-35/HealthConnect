@@ -4,7 +4,7 @@ const Patient = require('../models/patient.model');
 
 const auth = async (req, res, next) => {
   // Check both cookies and headers for token
-  const token = req.cookies.token || req.header('x-auth-token');
+  const token = req.cookies?.token || req.header('x-auth-token');
   
   if (!token) {
     return res.status(401).json({ 

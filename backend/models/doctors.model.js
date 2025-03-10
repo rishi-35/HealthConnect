@@ -34,7 +34,7 @@ const doctorSchema = new mongoose.Schema({
     coordinates: { type: [Number], required: true } // [longitude, latitude]
   },
   dob: { type: Date, required: true },
-  gender: { type: String, enum: ['male', 'female','Male','Female', 'other'], required: true },
+  gender: { type: String, enum: ['male', 'female', 'Male', 'Female', 'other'], required: true },
   phone: { type: String, required: true },
   profilePhoto: { type: String },
   availability: {
@@ -44,6 +44,7 @@ const doctorSchema = new mongoose.Schema({
       end: { type: String, default: '17:00' }
     }
   },
+  fee: { type: Number, required: true, default: 500 }, // Doctor's consultation fee
   rating: {
     type: Number,
     default: 0,
@@ -70,6 +71,7 @@ doctorSchema.pre('save', async function (next) {
   }
   next();
 });
+
 // Add instance method to add reviews
 doctorSchema.methods.addReview = async function(patientId, rating, comment) {
   this.reviews.push({

@@ -13,40 +13,85 @@ const cookieOptions = {
   path: '/',
 };
 
-async function doctorRegister(req,res) {
+async function doctorRegister(req, res) {
+  const { 
+    name, 
+    email, 
+    password, 
+    specialization, 
+    certificate, 
+    hospitalLocation, 
+    dob, 
+    gender, 
+    phone, 
+    fee // Add fee field
+  } = req.body;
 
-      const { name, email, password, specialization, certificate, hospitalLocation, dob, gender, phone } = req.body;
-      try {
-        let doctor = await Doctor.findOne({ email });
-        if (doctor) return res.status(400).json({ error: 'Doctor already exists' });
-    
-        doctor = new Doctor({ 
-          name, email, password, specialization, certificate,
-          hospitalLocation: { 
-            type: 'Point', 
-            coordinates: hospitalLocation.coordinates 
-          },
-          dob, gender, phone 
-        });
-        await doctor.save();
-    
-        const token = jwt.sign(
-          { id: doctor.id, role: 'doctor' },
-          process.env.JWT_SECRET,
-          { expiresIn: '1h' }
-        );
-    
-        res.cookie('token', token, cookieOptions);
-        res.status(201).json({ 
-          message: 'Doctor registered successfully',
-          user: { id: doctor.id, name: doctor.name, email: doctor.email }
-        });
-      } catch (err) {
-        console.log("error in login auth.controlers"+err);
-        return  res.status(500).json({sucess:false,message:"Internal-Server error"});
+  try {
+    // Check if doctor already exists
+    let doctor = await Doctor.findOne({ email });
+    if (doctor) {
+      return res.status(400).json({ error: 'Doctor already exists' });
+    }
+
+    // Validate fee (must be a positive number)
+    if (typeof fee !== 'number' || fee <= 0) {
+      return res.status(400).json({ error: 'Invalid fee. Fee must be a positive number' });
+    }
+
+    // Create new doctor
+    doctor = new Doctor({ 
+      name, 
+      email, 
+      password, 
+      specialization, 
+      certificate,
+      hospitalLocation: { 
+        type: 'Point', 
+        coordinates: hospitalLocation.coordinates 
+      },
+      dob, 
+      gender, 
+      phone,
+      fee // Include fee field
+    });
+
+    // Save doctor to database
+    await doctor.save();
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: doctor.id, role: 'doctor' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // Set cookie with token
+    res.cookie('token', token, { 
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: 'strict' 
+    });
+
+    // Send success response
+    res.status(201).json({ 
+      message: 'Doctor registered successfully',
+      user: { 
+        id: doctor.id, 
+        name: doctor.name, 
+        email: doctor.email,
+        fee: doctor.fee // Include fee in response
       }
-    
+    });
+  } catch (err) {
+    console.error("Error in doctorRegister:", err.message);
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal Server Error" 
+    });
+  }
 }
+
 async function patientRegistration(req,res) {
           const { name, email, password, phone, dob, gender } = req.body;
           try {

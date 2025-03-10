@@ -14,15 +14,18 @@
   "dependencies": {
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
+    "geolib": "^3.3.4",
     "jsonwebtoken": "^9.0.2",
     "mini-project": "file:",
     "mongoose": "^8.10.1",
     "nodemon": "^3.1.9",
+    "razorpay": "^2.9.6",
     "vite": "^6.2.0"
   }
 }
