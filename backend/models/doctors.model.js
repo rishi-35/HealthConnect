@@ -27,15 +27,15 @@ const doctorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  specialization: { type: String, required: true },
-  certificate: { type: String, required: true }, // Store URL/path
+  specialization: { type: String,  },
+  certificate: { type: String,}, // Store URL/path
   hospitalLocation: {
     type: { type: String, enum: ['Point'], default: 'Point' },
-    coordinates: { type: [Number], required: true } // [longitude, latitude]
+    coordinates: { type: [Number],  } // [longitude, latitude]
   },
-  dob: { type: Date, required: true },
-  gender: { type: String, enum: ['male', 'female', 'Male', 'Female', 'other'], required: true },
-  phone: { type: String, required: true },
+  dob: { type: Date,},
+  gender: { type: String, enum: ['male', 'female', 'Male', 'Female', 'other'], },
+  phone: { type: String, },
   profilePhoto: { type: String },
   availability: {
     isAvailable: { type: Boolean, default: true },
@@ -44,7 +44,7 @@ const doctorSchema = new mongoose.Schema({
       end: { type: String, default: '17:00' }
     }
   },
-  fee: { type: Number, required: true, default: 500 }, // Doctor's consultation fee
+  fee: { type: Number, default: 500 }, // Doctor's consultation fee
   rating: {
     type: Number,
     default: 0,

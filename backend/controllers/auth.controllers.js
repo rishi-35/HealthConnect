@@ -67,11 +67,7 @@ async function doctorRegister(req, res) {
     );
 
     // Set cookie with token
-    res.cookie('token', token, { 
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production', 
-      sameSite: 'strict' 
-    });
+    res.cookie('token', token,cookieOptions);
 
     // Send success response
     res.status(201).json({ 
@@ -93,12 +89,12 @@ async function doctorRegister(req, res) {
 }
 
 async function patientRegistration(req,res) {
-          const { name, email, password, phone, dob, gender } = req.body;
+          const { name, email, password,} = req.body;
           try {
             let patient = await Patient.findOne({ email });
             if (patient) return res.status(400).json({ error: 'Patient already exists' });
         
-            patient = new Patient({ name, email, password, phone, dob, gender });
+            patient = new Patient({ name, email, password,});
             await patient.save();
         
             const token = jwt.sign(
@@ -194,11 +190,20 @@ async function doctorLogout(req,res) {
         }
       
 }
+async function authCheck(req,res) {
+  try {
+      return  res.status(200).json({sucess:true, user:req.user});
+  } catch (error) {
+      console.log("Error in auth.controlers.js"+error.message);
+      return res.status(500).json({sucess:false,message:"Internal-Server-Error"});
+  }
+}
 module.exports={
     doctorRegister,
     patientRegistration,
     patientLogin,
     doctorLogin,
     patientLogout,
-    doctorLogout
+    doctorLogout,
+    authCheck
 }

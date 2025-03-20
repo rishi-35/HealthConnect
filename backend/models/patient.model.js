@@ -10,9 +10,9 @@ const patientSchema = new mongoose.Schema({
     allergies: { type: [String] }
   },
   profilePhoto: { type: String },
-  dob: { type: Date, required: true },
-  gender: { type: String, enum: ['male', 'female', 'other'], required: true },
-  phone: { type: String, required: true }
+  dob: { type: Date,},
+  gender: { type: String, enum: ['male', 'female', 'other'],},
+  phone: { type: String, }
 });
 
 // Hash password before saving

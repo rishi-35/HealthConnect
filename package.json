@@ -22,10 +22,13 @@
     "express-validator": "^7.2.1",
     "geolib": "^3.3.4",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.482.0",
     "mini-project": "file:",
     "mongoose": "^8.10.1",
     "nodemon": "^3.1.9",
     "razorpay": "^2.9.6",
-    "vite": "^6.2.0"
+    "react-hot-toast": "^2.5.2",
+    "vite": "^6.2.0",
+    "zustand": "^5.0.3"
   }
 }

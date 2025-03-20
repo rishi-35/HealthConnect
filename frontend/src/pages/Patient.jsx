@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
+import UpcomingAppointments from "../components/UpcomingAppointments";
+import { useAuthStore } from "../store/authStore";
 
 export default function Patient() {
   // State variables
@@ -8,7 +10,8 @@ export default function Patient() {
   const [isLocationEdited, setIsLocationEdited] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-
+  const {user}=useAuthStore();
+  console.log("cur user:", JSON.stringify(user, null, 2));
   // Debounce function for API calls
   const debounce = useCallback((func, delay) => {
     let timeoutId;
@@ -238,6 +241,9 @@ export default function Patient() {
           </div>
         </div>
       </section>
+       {/* fectch upcoming uppointments  */}
+      <UpcomingAppointments/>
     </>
+
   );
 }

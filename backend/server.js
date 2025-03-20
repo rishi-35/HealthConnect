@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const cookieParser=require('cookie-parser');
+
 // Load routes
 
 const authRoutes=require('./routes/auth.route');
@@ -14,11 +15,22 @@ const searchRoutes=require("./routes/search.route");
 const razorpayRoute=require("./routes/razorpay.route");
 const patientRoute=require("./routes/patient.route");
 connectDB();
-
 const app = express();
-app.use(cors());
-app.use(cookieParser());
-app.use(express.json());
+
+
+// 1. CORS Configuration (FIRST MIDDLEWARE)
+app.use(cors({
+    origin: 'http://localhost:5173', // Your frontend URL
+    credentials: true // Allow cookies/auth headers
+  }));
+  
+  // 2. Other essential middleware
+  app.use(express.json());
+  app.use(cookieParser());
+  
+// app.use(cors());
+// app.use(cookieParser());
+// app.use(express.json());
 
 // Register routes
 app.use('/api/auth', authRoutes);

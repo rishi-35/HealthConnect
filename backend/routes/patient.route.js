@@ -10,7 +10,7 @@ router.get('/upcoming', auth, async (req, res) => {
   try {
     // Get the patient ID from the authenticated user
     const patientId = req.user.id;
-
+    console.log("for testing "+patientId);
     // Get the patient's current location from query parameters (latitude and longitude)
     const { latitude, longitude } = req.query;
 
