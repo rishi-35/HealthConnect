@@ -2,9 +2,10 @@ const jwt = require('jsonwebtoken');
 const Doctor = require('../models/doctors.model');
 const Patient = require('../models/patient.model');
 
-const auth = async (req, res, next) => {
+const protectRoute = async (req, res, next) => {
   // Check both cookies and headers for token
-  const token = req.cookies?.token || req.header('x-auth-token');
+  const token = req.cookies['token'];
+  // console.log("Cookies received:", req.cookies); this is used for to check whether cookie is recived form frontend or not 
 
   console.log("Auth Middleware: Token received:", req.cookies?.token );
 
@@ -48,4 +49,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = protectRoute;

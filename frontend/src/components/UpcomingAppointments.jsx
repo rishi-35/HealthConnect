@@ -10,10 +10,12 @@ export default function UpcomingAppointments() {
 
   useEffect(() => {
     console.log("useEffect Triggered");
+    
     const fetchAppointments = async (lat, lon) => {
       try {
         const response = await axios.get("http://localhost:5000/api/patient/upcoming", {
           params: { latitude: lat, longitude: lon },
+          withCredentials: true // This is crucial for sending cookies
         });
         console.log("API Response:", response.data); // Debugging log
 

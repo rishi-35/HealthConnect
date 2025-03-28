@@ -7,11 +7,12 @@ const Doctor=require('../models/doctors.model');
 // Cookie configuration
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 3600000, // 1 hour in milliseconds
-  path: '/',
+  secure: process.env.NODE_ENV === 'production', // false in development
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust for cross-site in production
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  path: '/'
 };
+
 
 async function doctorRegister(req, res) {
   const { 
@@ -63,7 +64,7 @@ async function doctorRegister(req, res) {
     const token = jwt.sign(
       { id: doctor.id, role: 'doctor' },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     );
 
     // Set cookie with token
@@ -100,7 +101,7 @@ async function patientRegistration(req,res) {
             const token = jwt.sign(
               { id: patient.id, role: 'patient' },
               process.env.JWT_SECRET,
-              { expiresIn: '1h' }
+              { expiresIn: '7d' }
             );
         
             res.cookie('token', token, cookieOptions);
@@ -118,25 +119,26 @@ async function patientLogin(req,res) {
       const { email, password } = req.body;
       try {
         const patient = await Patient.findOne({ email });
-        if (!patient) return res.status(400).json({ error: 'Invalid credentials' });
+        if (!patient) return res.status(400).json({ message: 'Invalid credentials' });
     
         const isMatch = await bcrypt.compare(password, patient.password);
-        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
-        console.log("this is reached");
+        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
         const token = jwt.sign(
           { id: patient.id, role: 'patient' },
           process.env.JWT_SECRET,
-          { expiresIn: '1h' }
+          { expiresIn: '7d' }
         );
     
         res.cookie('token', token, cookieOptions);
+        req.user=patient
+      
         res.json({ 
           message: 'Patient logged in successfully',
           user: { id: patient.id, name: patient.name, email: patient.email }
         });
       } catch (err) {
         console.log("error in login auth.controlers"+err);
-        return  res.status(500).json({sucess:false,message:"Internal-Server error"});
+        return  res.status(500).json({message:"Internal-Server error"});
       }
     }
 
@@ -152,11 +154,11 @@ async function doctorLogin(req,res) {
           const token = jwt.sign(
             { id: doctor.id, role: 'doctor' },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '7d' }
           );
       
           res.cookie('token', token, cookieOptions);
-          res.json({ 
+          return res.json({ 
             message: 'Doctor logged in successfully',
             user: { id: doctor.id, name: doctor.name, email: doctor.email }
           });
@@ -192,6 +194,7 @@ async function doctorLogout(req,res) {
 }
 async function authCheck(req,res) {
   try {
+    console.log("req.user val: ",req.user);
       return  res.status(200).json({sucess:true, user:req.user});
   } catch (error) {
       console.log("Error in auth.controlers.js"+error.message);

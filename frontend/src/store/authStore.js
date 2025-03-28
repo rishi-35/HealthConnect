@@ -25,13 +25,23 @@ export const useAuthStore= create((set)=>({
     login: async (credentials) => {
         set({isLoging:true});
         try {
-            const {role}= credentials;
-            const response=await axios.post(`http://localhost:5000/api/auth/${role}/login`,credentials,{ withCredentials: true } );
-            set({user:response.data.user,isLoging:false})
-            toast.success("Login successfull");
+            const {role, email, password} = credentials;
+            const response = await axios.post(
+                `http://localhost:5000/api/auth/${role}/login`,
+                {email, password},
+                { 
+                    withCredentials: true,
+                    headers: { 'Content-Type': 'application/json' }
+                }
+            );
+            set({user:response.data.user, isLoging:false});
+            
+            toast.success("Login successful");
         } catch (error) {
-            toast.error(error.response.data.message || "Login failed");
-            set({isLoging:false,user:null})
+            const errorMessage = error.response?.data?.message|| "Login failed";
+            toast.error(errorMessage);
+            console.error("Error manual: ", errorMessage);
+            set({isLoging:false, user:null});
         }
     },
     logout: async (req,res) => {

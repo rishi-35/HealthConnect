@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth.middleware');
+const auth = require('../middlewares/protectRoute.middleware');
 const Appointment = require('../models/appointment.model');
 const Doctor = require('../models/doctors.model');
 const Razorpay = require('razorpay');

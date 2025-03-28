@@ -105,7 +105,7 @@ export default function AuthPage() {
             className="w-full p-2 border rounded mb-2"
           />
 
-          <button className="w-full bg-blue-600 text-white py-2 rounded mt-2">
+          <button className="w-full bg-blue-600 text-white py-2 rounded mt-2" onClick={handleAuth}>
             {isLogin ? "Login" : "Register"}
           </button>
         </form>

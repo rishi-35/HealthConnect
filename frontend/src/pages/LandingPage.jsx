@@ -5,8 +5,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useNavigate } from "react-router-dom";
 
 export default function LandingPage() {
+  const navitage=useNavigate();
   return (
     <div className="bg-blue-50 min-h-screen font-sans">
       {/* Hero Section */}
@@ -86,7 +88,7 @@ export default function LandingPage() {
       <h2 className="text-4xl md:text-5xl font-bold leading-tight">
         Book Appointment <br /> With <span className="text-blue-600">100+ Trusted Doctors</span>
       </h2>
-      <button className="mt-8 bg-white text-blue-600 px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:bg-blue-100 transition">
+      <button className="mt-8 bg-white text-blue-600 px-8 py-4 text-lg font-semibold rounded-full shadow-lg hover:bg-blue-100 transition" onClick={()=>navitage("/login")}>
         Create Account
       </button>
     </div>

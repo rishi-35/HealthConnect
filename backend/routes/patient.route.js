@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/auth.middleware'); // Authentication middleware
+
 const Appointment = require('../models/appointment.model'); // Appointment model
 const Doctor = require('../models/doctors.model'); // Doctor model
 const geolib = require('geolib'); // Library for distance calculation
 
 // Fetch all upcoming appointments for the logged-in patient
-router.get('/upcoming', auth, async (req, res) => {
+router.get('/upcoming', async (req, res) => {
   try {
     // Get the patient ID from the authenticated user
     const patientId = req.user.id;
