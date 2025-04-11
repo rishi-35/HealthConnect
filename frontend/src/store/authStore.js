@@ -13,9 +13,10 @@ export const useAuthStore= create((set)=>({
         set({isSigningUp:true});
         try {
             const {role}= credentials;
+           
             const response = await axios.post(`http://localhost:5000/api/auth/${role}/register`,credentials,{ withCredentials: true } );
             set({user:response.data.user,isSigningUp:false})
-            console.log("response :"+response.data);
+            
             toast.success("Account created successfully");
         } catch (error) {
             toast.error(error.response.data.message || "SignUp failed");
@@ -47,13 +48,12 @@ export const useAuthStore= create((set)=>({
     logout: async (req,res) => {
         set({isLogingout:true})
         try {
-            const role= req.specialization?'doctor':'patient';
-             await axios.post(`http://localhost:5000/api/auth/${role}/logout`,{},{ withCredentials: true } )
+             await axios.post(`http://localhost:5000/api/auth/logout`,{},{ withCredentials: true } )
             set({isLogingout:false,user:null})
             toast.success("Logout is Successfull");
         } catch (error) {
             set({isLogingout:false})
-            toast.error(error.response.data.message || "logout is failed");
+            toast.error(error.response.data?.message || "logout is failed");
         }
     },
     authCheck: async () => {
@@ -61,7 +61,7 @@ export const useAuthStore= create((set)=>({
         try {
             const response=await axios.get('http://localhost:5000/api/auth/authcheck',{ withCredentials: true } );
             set({user:response.data.user,isCheckingAuth:false})
-            // console.log("testing ",JSON.stringify(response.data.user));
+            
         } catch (error) {
             console.log("error occured in store in authcheck function"+error.message);
             set({user:null,isCheckingAuth:false})

@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { User, ChevronDown } from "lucide-react"; // Profile Icon
+import { useAuthStore } from "../store/authStore";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef(null);
+  const { user, logout } = useAuthStore();
 
   // Toggle functions
   const toggleMobileMenu = () => setMobileMenuOpen(!isMobileMenuOpen);
@@ -46,7 +48,7 @@ export default function Navbar() {
           {["Home", "About Us", "Services", "Blog", "Contact"].map((item, index) => (
             <li key={index}>
               <Link
-                to={`/${item.toLowerCase().replace(" ", "")}`}
+                to={item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "")}`}
                 className="text-black no-underline hover:text-blue-600 transition-all text-lg"
                 onClick={toggleMobileMenu}
               >
@@ -56,42 +58,57 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Profile Dropdown */}
+        {/* Profile Dropdown or Sign In/Sign Up */}
         <div className="relative" ref={profileMenuRef}>
-          <button
-            onClick={toggleProfileMenu}
-            className="flex items-center gap-2 text-black hover:bg-gray-200 px-3 py-2 rounded-full transition-all"
-          >
-            <User className="w-7 h-7" />
-            <ChevronDown className="w-4 h-4" />
-          </button>
-
-          {isProfileMenuOpen && (
-            <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border py-2 transition-all">
-              <Link
-                to="/profile"
-                className="block px-4 py-2 text-black hover:bg-blue-100 transition-all"
-                onClick={() => setProfileMenuOpen(false)}
-              >
-                Edit Profile
-              </Link>
-              <Link
-                to="/settings"
-                className="block px-4 py-2 text-black hover:bg-blue-100 transition-all"
-                onClick={() => setProfileMenuOpen(false)}
-              >
-                Settings
-              </Link>
+          {user ? (
+            <>
+              {/* Profile Button */}
               <button
-                onClick={() => {
-                  setProfileMenuOpen(false);
-                  // Add logout logic here
-                }}
-                className="w-full text-left px-4 py-2 text-black hover:bg-red-100 transition-all"
+                onClick={toggleProfileMenu}
+                className="flex items-center gap-2 text-black hover:bg-gray-200 px-3 py-2 rounded-full transition-all"
               >
-                Logout
+                <User className="w-7 h-7" />
+                <ChevronDown className="w-4 h-4" />
               </button>
-            </div>
+
+              {/* Profile Dropdown */}
+              {isProfileMenuOpen && (
+                <div className="absolute right-0 mt-2 w-52 bg-white rounded-lg shadow-lg border py-2 transition-all">
+                  <Link
+                    to="/edit-profile"
+                    className="block px-4 py-2 text-black hover:bg-blue-100 transition-all"
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
+                    Edit Profile
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="block px-4 py-2 text-black hover:bg-blue-100 transition-all"
+                    onClick={() => setProfileMenuOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      logout(); // Call logout function
+                    }}
+                    className="w-full text-left px-4 py-2 text-black hover:bg-red-100 transition-all"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            // Sign In / Sign Up Button when user is not logged in
+            <Link
+              to="/login"
+              className="border border-gray-400 text-gray-800 px-5 pt-2 pb-3 rounded-lg font-medium 
+                        hover:bg-blue-500 hover:text-white transition-all duration-300 shadow-sm"
+            >
+              Login / Signup
+            </Link>
           )}
         </div>
       </div>

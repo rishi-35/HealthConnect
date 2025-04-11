@@ -1,17 +1,21 @@
 import React, { useEffect, useState, useCallback } from "react";
 import UpcomingAppointments from "../components/UpcomingAppointments";
 import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Patient() {
   // State variables
+  const navigate=useNavigate();
   const [detectedLocation, setDetectedLocation] = useState("");
   const [location, setLocation] = useState("");
+  const initialSearch = new URLSearchParams(location.search).get('search') || '';
   const [searchQuery, setSearchQuery] = useState("");
   const [isLocationEdited, setIsLocationEdited] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const {user}=useAuthStore();
-  console.log("cur user:", JSON.stringify(user, null, 2));
+  // const {user}=useAuthStore();
+  
   // Debounce function for API calls
   const debounce = useCallback((func, delay) => {
     let timeoutId;
@@ -20,6 +24,11 @@ export default function Patient() {
       timeoutId = setTimeout(() => func.apply(this, args), delay);
     };
   }, []);
+
+  const handleSearch = () => {
+    // Navigate to show-doctors with search query
+    navigate(`/show-doctors?search=${encodeURIComponent(searchQuery)}&location=${encodeURIComponent(location)}`);
+  };
 
   // Fetch location suggestions
   const fetchSuggestions = useCallback(
@@ -108,6 +117,7 @@ export default function Patient() {
         setLocation("Geolocation not supported");
       }
     }
+
   }, [isLocationEdited]);
 
   return (
@@ -125,7 +135,7 @@ export default function Patient() {
               <p className="text-base md:text-lg opacity-90 mb-6 md:mb-8">
                 Connecting you with trusted doctors for personalized care, anytime, anywhere.
               </p>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md">
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md" onClick={()=>{navigate("/show-doctors")}}>
                 Find Your Doctor
               </button>
             </div>
@@ -171,6 +181,7 @@ export default function Patient() {
             placeholder="Doctor, condition, procedure"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             className="border p-3 rounded-lg flex-1 w-full md:w-auto"
           />
 
@@ -208,8 +219,10 @@ export default function Patient() {
             )}
           </div>
 
-          {/* Search Button */}
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg w-full md:w-auto">
+          <button 
+            onClick={handleSearch}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg w-full md:w-auto"
+          >
             Search
           </button>
         </div>
@@ -222,7 +235,7 @@ export default function Patient() {
             <img src="/appointment.png" alt="Book Appointment" className="w-full h-48 object-cover" />
             <div className="p-6 text-center">
               <h3 className="text-lg font-semibold mb-3">Book Appointment</h3>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg w-full">Book Now</button>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg w-full" onClick={()=>navigate("/show-doctors")}>Book Now</button>
             </div>
           </div>
           <div className="relative w-full md:w-1/3 bg-white shadow-xl rounded-2xl overflow-hidden transform transition duration-300 hover:scale-105">

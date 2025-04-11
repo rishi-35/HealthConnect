@@ -5,6 +5,8 @@ const auth = require('../middlewares/protectRoute.middleware');
 const Appointment = require('../models/appointment.model');
 const Doctor = require('../models/doctors.model');
 const Razorpay = require('razorpay');
+// Add this at the top with other requires
+const moment = require('moment-timezone');
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID, // Your Razorpay key ID
@@ -37,37 +39,28 @@ router.post('/book', auth, async (req, res) => {
       return res.status(404).json({ error: 'Doctor not found' });
     }
 
-    // Calculate start and end times for the new appointment
-    const appointmentStart = new Date(appointmentDate);
-    const appointmentEnd = new Date(appointmentStart.getTime() + 30 * 60000); // 30 minutes duration
+    // Calculate start and end times
+    const appointmentStart = new Date(dateTime);
+    const appointmentEnd = new Date(appointmentStart.getTime() + 30 * 60000);
 
-    // Check for overlapping appointments
-    const overlappingAppointments = await Appointment.find({
-      doctor: doctorId,
-      dateTime: {
-        $lt: appointmentEnd, // Existing appointment starts before the new one ends
-        $gte: appointmentStart // Existing appointment ends after the new one starts
-      }
-    });
-
-    if (overlappingAppointments.length > 0) {
-      return res.status(400).json({ error: 'Time slot is already booked' });
+    // Check lunch time (12pm-1pm in doctor's local time)
+    const doctorTZ = doctor.availability.timezone || 'UTC';
+    const localStart = moment(appointmentStart).tz(doctorTZ);
+    if (localStart.hour() === 12) {
+      return res.status(400).json({ error: 'Cannot book during lunch break (12pm-1pm)' });
     }
 
-    // Check for appointments within 30 minutes before or after
-    const bufferStart = new Date(appointmentStart.getTime() - 30 * 60000); // 30 minutes before
-    const bufferEnd = new Date(appointmentEnd.getTime() + 30 * 60000); // 30 minutes after
-
-    const bufferAppointments = await Appointment.find({
+    // Check direct overlaps only
+    const overlapping = await Appointment.find({
       doctor: doctorId,
-      dateTime: {
-        $lt: bufferEnd, // Existing appointment starts before the buffer ends
-        $gte: bufferStart // Existing appointment ends after the buffer starts
-      }
+      $or: [
+        { dateTime: { $lt: appointmentEnd, $gte: appointmentStart } },
+        { endTime: { $gt: appointmentStart, $lte: appointmentEnd } }
+      ]
     });
 
-    if (bufferAppointments.length > 0) {
-      return res.status(400).json({ error: 'Appointments must be at least 30 minutes apart' });
+    if (overlapping.length > 0) {
+      return res.status(400).json({ error: 'Time slot is already booked' });
     }
 
     // Create the appointment
@@ -79,7 +72,8 @@ router.post('/book', auth, async (req, res) => {
         method: paymentMethod || 'cash', // Default to cash
         status: 'pending'
       },
-      notes: notes || '' // Include notes (default to empty string if not provided)
+      notes: notes || '', // Include notes (default to empty string if not provided)
+      endTime: new Date(appointmentStart.getTime() + 30 * 60000)
     });
 
     // Handle online payments

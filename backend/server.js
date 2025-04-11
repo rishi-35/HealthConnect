@@ -1,6 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const cookieParser=require('cookie-parser');
@@ -21,7 +22,8 @@ const app = express();
 
 // 1. CORS Configuration (FIRST MIDDLEWARE)
 app.use(cors({
-    origin: 'http://localhost:5174', // Your frontend URL
+    origin: 'http://localhost:5173', // Your frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true // Allow cookies/auth headers
   }));
   
@@ -29,12 +31,12 @@ app.use(cors({
   app.use(cookieParser());
   app.use(express.json()); 
   app.use(express.urlencoded({ extended: true }));
-  
-// app.use(cors());
-// app.use(cookieParser());
-// app.use(express.json());
+  const uploadsPath = path.resolve(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
+
 
 // Register routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/doctors',protectRoute, doctorRoutes);
 app.use('/api/appointments',protectRoute, appointmentRoutes);

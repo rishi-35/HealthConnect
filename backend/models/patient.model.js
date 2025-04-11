@@ -6,11 +6,11 @@ const patientSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   healthInfo: {
-    conditions: { type: [String] },
-    allergies: { type: [String] }
+    conditions: { type: [String], default: [] },
+    allergies: { type: [String], default: [] },
   },
   profilePhoto: { type: String },
-  dob: { type: Date,},
+  dateOfBirth: { type: Date,},
   gender: { type: String, enum: ['male', 'female', 'other'],},
   phone: { type: String, }
 });

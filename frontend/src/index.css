@@ -1,1 +1,32 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+@import 'tailwindcss/preflight'
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar-modern::-webkit-scrollbar {
+    width: 6px; /* Thinner scrollbar */
+  }
+
+  .scrollbar-modern::-webkit-scrollbar-track {
+    background: #f0f9ff; /* Light blue (blue-50) to blend with bg */
+    border-radius: 12px; /* Rounded edges */
+  }
+
+  .scrollbar-modern::-webkit-scrollbar-thumb {
+    background: #93c5fd; /* Soft blue (blue-300) for subtlety */
+    border-radius: 12px; /* Rounded thumb */
+    transition: background 0.3s ease; /* Smooth hover transition */
+  }
+
+  .scrollbar-modern::-webkit-scrollbar-thumb:hover {
+    background: #60a5fa; /* Slightly darker blue (blue-400) on hover */
+  }
+
+  /* Firefox support */
+  .scrollbar-modern {
+    scrollbar-width: thin;
+    scrollbar-color: #93c5fd #f0f9ff; /* Thumb: blue-300, Track: blue-50 */
+  }
+}

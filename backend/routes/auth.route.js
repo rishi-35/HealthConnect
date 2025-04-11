@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { check } = require('express-validator');
 const Doctor = require('../models/doctors.model');
 const Patient = require('../models/patient.model');
-const { doctorRegister, patientRegistration, patientLogin, patientLogout, doctorLogout, doctorLogin, authCheck } = require('../controllers/auth.controllers');
+const { doctorRegister, patientRegistration, patientLogin, doctorLogin, authCheck, logout } = require('../controllers/auth.controllers');
 const protectRoute = require('../middlewares/protectRoute.middleware');
 
 
@@ -36,11 +36,9 @@ router.post('/doctor/login', [
   check('password').not().isEmpty()
 ], doctorLogin);
 
-// Patient Logout
-router.post('/patient/logout', patientLogout);
+//  Logout
+router.post('/logout', logout);
 
-// Doctor Logout
-router.post('/doctor/logout', doctorLogout);
 
 // auth check 
 router.get("/authcheck",protectRoute,authCheck);

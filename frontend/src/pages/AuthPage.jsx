@@ -24,7 +24,7 @@ export default function AuthPage() {
     const dataToSend = { ...formData, role: isDoctor ? "doctor" : "patient" };
 
     if (isLogin) {
-      login(dataToSend); // Call Login function with form data
+        login(dataToSend); // Call Login function with form data
     } else {
       signUp(dataToSend); // Call signUp function with form data
     }

@@ -2,12 +2,22 @@ const jwt = require('jsonwebtoken');
 const Doctor = require('../models/doctors.model');
 const Patient = require('../models/patient.model');
 
-const protectRoute = async (req, res, next) => {
-  // Check both cookies and headers for token
-  const token = req.cookies['token'];
-  // console.log("Cookies received:", req.cookies); this is used for to check whether cookie is recived form frontend or not 
+const isProfileComplete = (doctor) => {
+  // Explicit boolean conversion
+  return Boolean(
+    doctor.specialization &&
+    doctor.certificate &&
+    doctor.hospitalLocation?.coordinates?.length === 2 &&
+    doctor.dateOfBirth &&
+    doctor.gender &&
+    doctor.phone &&
+    doctor.profilePhoto
+  );
+};
 
-  console.log("Auth Middleware: Token received:", req.cookies?.token );
+const protectRoute = async (req, res, next) => {
+  const token = req.cookies['token'];
+  // console.log("Auth Middleware: Token received:", req.cookies?.token);
 
   if (!token) {
     return res.status(401).json({ 
@@ -18,12 +28,15 @@ const protectRoute = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Find user based on role
     let user;
     if (decoded.role === 'doctor') {
-      user = await Doctor.findById(decoded.id).select('-password');
+      user = await Doctor.findById(decoded.id)
+        .select('-password')
+        .lean();
     } else if (decoded.role === 'patient') {
-      user = await Patient.findById(decoded.id).select('-password');
+      user = await Patient.findById(decoded.id)
+        .select('-password')
+        .lean();
     } else {
       return res.status(401).json({ error: 'Invalid role in token' });
     }
@@ -32,12 +45,33 @@ const protectRoute = async (req, res, next) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    // Attach user to request object
-    req.user = user;
+    // Debugging: Log profile completion factors
+    // console.log('Profile completion check:', {
+    //   specialization: !!user.specialization,
+    //   certificate: !!user.certificate,
+    //   coordinates: user.hospitalLocation?.coordinates?.length,
+    //   dateOfBirth: !!user.dateOfBirth,
+    //   gender: !!user.gender,
+    //   phone: !!user.phone,
+    //   profilePhoto: !!user.profilePhoto
+    // });
+
+    // Create user object with proper typing
+    const userData = {
+      email: user.email,
+      id: user._id,
+      name: user.name,
+      role: decoded.role, // Use role from token instead of specialization check
+      isProfileComplete: decoded.role === 'doctor' 
+        ? isProfileComplete(user)
+        : Boolean(user.phone) // Example patient completion check
+    };
+
+    // console.log("Authenticated user:", userData);
+    req.user = userData;
     req.token = token;
     next();
   } catch (err) {
-    // Specific error handling
     const errorMessage = err.name === 'TokenExpiredError' 
       ? 'Token expired' 
       : 'Invalid token';

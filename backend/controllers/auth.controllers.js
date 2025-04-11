@@ -18,14 +18,7 @@ async function doctorRegister(req, res) {
   const { 
     name, 
     email, 
-    password, 
-    specialization, 
-    certificate, 
-    hospitalLocation, 
-    dob, 
-    gender, 
-    phone, 
-    fee // Add fee field
+    password 
   } = req.body;
 
   try {
@@ -35,26 +28,13 @@ async function doctorRegister(req, res) {
       return res.status(400).json({ error: 'Doctor already exists' });
     }
 
-    // Validate fee (must be a positive number)
-    if (typeof fee !== 'number' || fee <= 0) {
-      return res.status(400).json({ error: 'Invalid fee. Fee must be a positive number' });
-    }
-
-    // Create new doctor
+    // Create new doctor with only required fields
     doctor = new Doctor({ 
       name, 
       email, 
-      password, 
-      specialization, 
-      certificate,
-      hospitalLocation: { 
-        type: 'Point', 
-        coordinates: hospitalLocation.coordinates 
-      },
-      dob, 
-      gender, 
-      phone,
-      fee // Include fee field
+      password ,
+      hospitalLocation: null ,
+      activestatus:false,
     });
 
     // Save doctor to database
@@ -68,7 +48,7 @@ async function doctorRegister(req, res) {
     );
 
     // Set cookie with token
-    res.cookie('token', token,cookieOptions);
+    res.cookie('token', token, cookieOptions);
 
     // Send success response
     res.status(201).json({ 
@@ -77,8 +57,9 @@ async function doctorRegister(req, res) {
         id: doctor.id, 
         name: doctor.name, 
         email: doctor.email,
-        fee: doctor.fee // Include fee in response
-      }
+        role: 'doctor'
+      },
+      isProfileComplete:false
     });
   } catch (err) {
     console.error("Error in doctorRegister:", err.message);
@@ -107,7 +88,7 @@ async function patientRegistration(req,res) {
             res.cookie('token', token, cookieOptions);
             res.status(201).json({ 
               message: 'Patient registered successfully',
-              user: { id: patient.id, name: patient.name, email: patient.email }
+              user: { id: patient.id, name: patient.name, email: patient.email ,role:'patient'}
             });
           } catch (err) {
             console.log("error in login auth.controlers"+err);
@@ -134,7 +115,7 @@ async function patientLogin(req,res) {
       
         res.json({ 
           message: 'Patient logged in successfully',
-          user: { id: patient.id, name: patient.name, email: patient.email }
+          user: { id: patient.id, name: patient.name, email: patient.email ,role:'patient'}
         });
       } catch (err) {
         console.log("error in login auth.controlers"+err);
@@ -142,37 +123,60 @@ async function patientLogin(req,res) {
       }
     }
 
-async function doctorLogin(req,res) {
-        const { email, password } = req.body;
-        try {
+    // to check whether the profile is completed or not 
+    const isProfileComplete = (doctor) => {
+      return (
+        doctor.specialization &&
+        doctor.certificate &&
+        doctor.hospitalLocation?.coordinates?.length === 2 && // Coordinates array check
+        doctor.dateOfBirth &&
+        doctor.gender &&
+        doctor.phone &&
+        doctor.profilePhoto
+      );
+    };
+  
+  async function doctorLogin(req, res) {
+      const { email, password } = req.body;
+  
+      try {
           const doctor = await Doctor.findOne({ email });
           if (!doctor) return res.status(400).json({ error: 'Invalid credentials' });
-      
+  
           const isMatch = await bcrypt.compare(password, doctor.password);
           if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
-      
+  
+          // Check if the doctor's profile is complete
+          const profileComplete = isProfileComplete(doctor);
+  
           const token = jwt.sign(
-            { id: doctor.id, role: 'doctor' },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+              { id: doctor.id, role: 'doctor' },
+              process.env.JWT_SECRET,
+              { expiresIn: '7d' }
           );
-      
+  
           res.cookie('token', token, cookieOptions);
-          return res.json({ 
-            message: 'Doctor logged in successfully',
-            user: { id: doctor.id, name: doctor.name, email: doctor.email }
+          return res.json({
+              message: 'Doctor logged in successfully',
+              user: {
+                  id: doctor.id,
+                  name: doctor.name,
+                  email: doctor.email,
+                  role: 'doctor',
+                  isProfileComplete: profileComplete,
+              }
           });
-        } catch (err) {
-            console.log("error in login auth.controlers"+err);
-            return  res.status(500).json({sucess:false,message:"Internal-Server error"});
-        }
-      
-}
-async function patientLogout(req,res) {
+      } catch (err) {
+          console.error("Error in doctorLogin function:", err);
+          return res.status(500).json({ success: false, message: "Internal Server Error" });
+      }
+  }
+  
+async function logout(req,res) {
         try{
 
-            res.clearCookie('token', cookieOptions);
-            res.json({ message: 'Patient logged out successfully' });
+          res.clearCookie('token');
+            res.json({ message: ' Logged out successfully' });
         }
         catch(err){
             console.log("error in  auth.controlers"+err);
@@ -180,21 +184,10 @@ async function patientLogout(req,res) {
         }
       
 }
-async function doctorLogout(req,res) {
-        try{
 
-            res.clearCookie('token', cookieOptions);
-            res.json({ message: 'Doctor logged out successfully' });
-        }
-        catch{
-            console.log("error in login auth.controlers"+err);
-            return  res.status(500).json({sucess:false,message:"Internal-Server error"});
-        }
-      
-}
 async function authCheck(req,res) {
   try {
-    console.log("req.user val: ",req.user);
+
       return  res.status(200).json({sucess:true, user:req.user});
   } catch (error) {
       console.log("Error in auth.controlers.js"+error.message);
@@ -206,7 +199,6 @@ module.exports={
     patientRegistration,
     patientLogin,
     doctorLogin,
-    patientLogout,
-    doctorLogout,
+    logout,
     authCheck
 }
