@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/protectRoute.middleware');
 const Doctor = require('../models/doctors.model');
-const { toggleAvailability, nearByDoctors, addReviews, getReviews, performance, getTopRatedDoctors, getAvailableSlots,} = require('../controllers/doctors.controllers');
+const { toggleAvailability, nearByDoctors, addReviews, getReviews, performance, getTopRatedDoctors, getAvailableSlots, getAvailability,} = require('../controllers/doctors.controllers');
 const upload= require("../middlewares/upload");
 // Toggle Availability
 router.put('/availability', auth,toggleAvailability);
-
+// get Availability
+router.get('/availability', auth,getAvailability);
 //get nearby doctors
 router.get('/nearby',nearByDoctors);
 

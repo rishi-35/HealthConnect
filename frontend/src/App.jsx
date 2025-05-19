@@ -13,6 +13,7 @@ import HomePage from './pages/HomePage';
 import EditProfile from './pages/EditProfile';
 import ShowDoctorsPage from './pages/ShowDoctorsPage';
 import AppointmentBookingPage from './pages/AppointmentBookingPage';
+import ContactUs from './pages/ContactUs';
 
 function App() {
   const { user, isCheckingAuth, authCheck } = useAuthStore();
@@ -38,6 +39,7 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/show-doctors' element={ user ?<ShowDoctorsPage/>: <Navigate to='/'/>}/>
+        <Route path='/contact' element={ <ContactUs/>}/>
         <Route path='/book-appointment/:id' element={ user ?<AppointmentBookingPage/>: <Navigate to='/'/>}/>
         <Route path='/edit-profile' element={user ? <EditProfile /> : <Navigate to='/' />} />
         <Route path='/login' element={!user ? <AuthPage /> : <Navigate to='/' />} />

@@ -1,11 +1,10 @@
 import React from 'react';
 import useProtectProfile from '../hooks/useProtectProfile';
+import DoctorDashboard from './DoctorDashboard';
 
 export default function DoctorPage() {
   useProtectProfile();
   return (
-    <div>
-      <h2>This is doctor page</h2>
-    </div>
+    <DoctorDashboard/>
   );
 }

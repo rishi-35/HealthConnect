@@ -364,7 +364,7 @@ const AppointmentBookingPage = () => {
                         : "/defaultDoctor.jpg"
                     }
                     alt={doctor.name}
-                    className="w-64 h-48 rounded-lg object-cover border-2 border-blue-200 shadow-sm mb-4"
+                    className="w-54 h-64 rounded-lg object-cover border-2 border-blue-200 shadow-sm mb-4"
                   />
                   <h3 className="text-xl font-semibold text-blue-900">
                     {doctor.name}

@@ -29,7 +29,7 @@ router.get('/upcoming', async (req, res) => {
       // Add explicit population if hospitalLocation is a reference
       populate: {
         path: 'hospitalLocation',
-        model: 'HospitalLocation' // Replace with actual model name
+        model: 'HospitalLocation' 
       }
     });
 

@@ -45,7 +45,7 @@ export default function Navbar() {
             isMobileMenuOpen ? "flex" : "hidden"
           } md:flex flex-col md:flex-row gap-6 md:gap-8 items-center md:static absolute top-16 left-0 right-0 bg-[#E3F2FD] md:bg-transparent p-4 md:p-0`}
         >
-          {["Home", "About Us", "Services", "Blog", "Contact"].map((item, index) => (
+          {["Home", "About Us",  "Contact"].map((item, index) => (
             <li key={index}>
               <Link
                 to={item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "")}`}

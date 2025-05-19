@@ -72,7 +72,7 @@ const doctorSchema = new mongoose.Schema({
       start: { type: String, default: "09:00" },
       end: { type: String, default: "17:00" }
     },
-    timezone: { type: String, default: 'UTC' }
+    timezone: { type: String, default: 'IST' }
   },
   fee: { type: Number, default: 500 },
   rating: {

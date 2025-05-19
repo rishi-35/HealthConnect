@@ -249,24 +249,25 @@ router.get('/confirmed', auth, async (req, res) => {
   }
 });
 
-// Get all appointments for the doctor
 router.get('/all', auth, async (req, res) => {
-  if (req.user.specialization ===undefined){
+  if (req.user.role !== 'doctor') {
     return res.status(403).json({ error: 'Only doctors can access this endpoint' });
   }
 
   try {
+    const now = new Date(); // Current time
+
     const appointments = await Appointment.find({
-      doctor: req.user.id
+      doctor: req.user.id,
+      dateTime: { $gte: now } // Only from current date and time
     }).populate('patient', 'name email phone');
 
-    res.json(appointments);
+    res.json({ appointments });
   } catch (err) {
     console.error("Error in /all:", err.message);
     res.status(500).send('Server error');
   }
 });
 
-module.exports = router;
-router.get("/upcoming",(req,res)=>{});
+
 module.exports=router;

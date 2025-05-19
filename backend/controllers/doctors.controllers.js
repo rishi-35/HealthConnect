@@ -9,7 +9,7 @@ validateCoordinates = (lng, lat) => {
 };
 
 async function toggleAvailability(req, res) {
-    if (req.user.specialization === undefined) {
+    if (req.user.role !== 'doctor') {
         return res.status(403).json({ error: 'Access denied' });
     }
     
@@ -21,17 +21,37 @@ async function toggleAvailability(req, res) {
         }
         
         // Toggle the availability
-        doctor.availability.isAvailable = !doctor.availability.isAvailable;
+        doctor.activestatus = !doctor.activestatus;
     
         // Save the updated doctor document
         await doctor.save();
     
         // Return the updated availability status
-        res.json({ isAvailable: doctor.availability.isAvailable });
+        res.json({ isAvailable: doctor.activestatus});
     } catch (err) {
         console.error('Error in /availability:', err.message);
         res.status(500).send('Server error');
     }
+}
+async function getAvailability(req, res) {
+  // Check if user is a doctor
+  if (req.user.role !== 'doctor') {
+    return res.status(403).json({ error: "Access denied: Not a doctor" });
+  }
+
+  try {
+    const doctor = await Doctor.findById(req.user.id);
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found" });
+    }
+
+    // Return the availability status
+    res.json({ isAvailable: doctor.activestatus});
+  } catch (err) {
+
+    console.error("Error fetching availability:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
 }
 const nearByDoctors = async (req, res) => {
   try {
@@ -223,7 +243,7 @@ async function getReviews(req, res) {
 }
 
 async function performance(req, res) {
-    if (req.user.specialization === undefined) {
+    if (req.user.role !== 'doctor') {
       return res.status(403).json({ error: 'Only doctors can access this endpoint' });
     }
   
@@ -241,7 +261,7 @@ async function performance(req, res) {
           $lte: new Date(endDate)
         };
       }
-  
+      console.log("reached to page");
       // Fetch completed appointments with pagination
       const appointments = await Appointment.find(query)
         .populate('patient', 'name email phone')
@@ -317,69 +337,69 @@ getAvailableSlots = async (req, res) => {
       return res.status(404).json({ error: 'Doctor not found' });
     }
 
-    // Get timezone and working hours
-    const tz = doctor.availability.timezone || 'UTC';
+    // Set timezone to IST (Asia/Kolkata)
+    const tz = 'Asia/Kolkata';
     const workingHours = doctor.availability.workingHours;
     
-    // Parse input date with timezone
-    const targetDate = moment.tz(req.query.date, tz); // tz is likely 'UTC' or another timezone
+    // Parse input date in IST
+    const targetDate = moment.tz(date, tz);
     if (!targetDate.isValid()) {
       return res.status(400).json({ error: 'Invalid date format' });
     }
 
-    // Convert working hours to UTC
+    // Extract working hours in IST
     const [startHour, startMinute] = workingHours.start.split(':').map(Number);
     const [endHour, endMinute] = workingHours.end.split(':').map(Number);
     
-    const startUTC = targetDate.clone().hour(startHour).minute(startMinute).tz('UTC');
-    const endUTC = targetDate.clone().hour(endHour).minute(endMinute).tz('UTC');
+    const startLocal = targetDate.clone().hour(startHour).minute(startMinute);
+    const endLocal = targetDate.clone().hour(endHour).minute(endMinute);
 
-    // Get all appointments for the day (UTC)
-    const startOfDay = targetDate.clone().startOf('day').tz('UTC');
-    const endOfDay = targetDate.clone().endOf('day').tz('UTC');
+    // Calculate start and end of day in IST, then convert to UTC for query
+    const startOfDayIST = targetDate.clone().startOf('day');
+    const endOfDayIST = targetDate.clone().endOf('day');
 
     const appointments = await Appointment.find({
       doctor: id,
       $or: [
-        { dateTime: { $gte: startOfDay.toDate(), $lt: endOfDay.toDate() } },
-        { endTime: { $gt: startOfDay.toDate(), $lte: endOfDay.toDate() } }
+        { dateTime: { $gte: startOfDayIST.toDate(), $lt: endOfDayIST.toDate() } },
+        { endTime: { $gt: startOfDayIST.toDate(), $lte: endOfDayIST.toDate() } }
       ]
     });
 
-    // Generate slots with lunch break
+    // Generate slots in IST
     const slotDuration = 30; // minutes
-    let currentSlot = startUTC.clone();
-    const endTime = endUTC.clone();
+    let currentSlot = startLocal.clone();
+    const endTime = endLocal.clone();
     const availableSlots = [];
     
     while (currentSlot.isBefore(endTime)) {
-      // Check lunch time in local time (12pm-1pm)
-      const localTime = currentSlot.clone().tz(tz);
-      if (localTime.hour() === 12) {
-        // Skip to 1pm in local time
-        currentSlot = targetDate.clone().tz(tz).hour(13).minute(0).tz('UTC');
+      // Skip lunch break (12 PM to 1 PM IST)
+      if (currentSlot.hour() === 12) {
+        currentSlot = currentSlot.clone().add(1, 'hour').minute(0);
         continue;
       }
 
-      const slotEnd = currentSlot.clone().add(slotDuration, 'minutes');
-      
-      // Check if slot exceeds working hours
-      if (slotEnd.isAfter(endUTC)) break;
+      const slotEndLocal = currentSlot.clone().add(slotDuration, 'minutes');
+      if (slotEndLocal.isAfter(endTime)) break;
 
-      // Check for conflicts with existing appointments
+      // Convert slot times to UTC for appointment comparison
+      const slotStartUTC = currentSlot.clone().utc();
+      const slotEndUTC = slotEndLocal.clone().utc();
+
+      // Check appointment conflicts in UTC
       const isAvailable = !appointments.some(appt => {
         const apptStart = moment(appt.dateTime);
         const apptEnd = moment(appt.endTime || apptStart).add(appt.duration || 30, 'minutes');
-        return currentSlot.isBefore(apptEnd) && slotEnd.isAfter(apptStart);
+        return slotStartUTC.isBefore(apptEnd) && slotEndUTC.isAfter(apptStart);
       });
 
-      // Only show future slots
-      if (isAvailable && currentSlot.isAfter(moment())) {
+      // Check if slot is in the future (IST)
+      const nowIST = moment().tz(tz);
+      if (isAvailable && currentSlot.isAfter(nowIST)) {
         availableSlots.push({
-          start: currentSlot.toISOString(),
-          end: slotEnd.toISOString(),
-          // Add human-readable local time for display
-          localTime: localTime.format('h:mm A') + ' - ' + localTime.clone().add(30, 'minutes').format('h:mm A')
+          start: slotStartUTC.toISOString(),
+          end: slotEndUTC.toISOString(),
+          localTime: `${currentSlot.format('h:mm A')} - ${slotEndLocal.format('h:mm A')}`
         });
       }
 
@@ -413,4 +433,5 @@ module.exports = {
     getTopRatedDoctors,
     getSpecializations,
     getAvailableSlots,
+    getAvailability,
 };
