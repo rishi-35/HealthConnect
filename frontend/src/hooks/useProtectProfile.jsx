@@ -5,7 +5,7 @@ import { useAuthStore } from "../store/authStore";
 const useProtectProfile = () => {
     const { user } = useAuthStore();
     const navigate = useNavigate();
-    // console.log("this is user",user);
+   
     useEffect(() => {
         if (user && !user.isProfileComplete) {
             navigate("/edit-profile"); // Redirect to edit profile page

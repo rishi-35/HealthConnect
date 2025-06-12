@@ -15,8 +15,7 @@ router.post('/webhook', express.json(), async (req, res) => {
       .update(JSON.stringify(req.body))
       .digest('hex');
   
-    console.log("Generated Signature:", expectedSignature);
-    console.log("Received Signature:", signature);
+  
   
     if (signature !== expectedSignature) {
       return res.status(400).json({ error: 'Invalid signature' });

@@ -76,7 +76,7 @@ const ShowDoctorsPage = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/doctors/top-rated', { withCredentials: true });
         const topDoctors = response.data.data || response.data;
-        console.log('this is to doctors',topDoctors)
+        
         setTopRatedDoctors(Array.isArray(topDoctors) ? topDoctors : []);
      
       } catch (error) {
@@ -307,9 +307,9 @@ const ShowDoctorsPage = () => {
                       animate={{ opacity: 1, y: 0 }}
                       className="bg-gradient-to-br from-yellow-50 to-white rounded-xl p-4 hover:shadow-lg transition-all duration-300 border border-yellow-100"
                     >
-                    {console.log("this is profile photo testing",doctor.profilePhoto)}
+                   
                       <div className="flex items-start">
-                        {/* {console.log(`http://localhost:5000${doctor.profilePhoto}`)} */}
+                       
                         <img
                           src={doctor.profilePhoto ? `http://localhost:5000${doctor.profilePhoto}` : '/defaultDoctor.jpg'}
                           alt={doctor.name}

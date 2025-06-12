@@ -147,7 +147,7 @@ router.post(
 
       // Handle profile photo upload
       if (req.files?.profilePhoto) {
-        patient.profilePhoto = `/uploads/${req.files.profilePhoto[0].filename}`;
+        patient.profilePhoto = `/backend/uploads/${req.files.profilePhoto[0].filename}`;
       }
 
       await patient.save();

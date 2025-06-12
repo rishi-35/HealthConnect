@@ -37,8 +37,8 @@ const EditPatientProfile = () => {
           }
         );
         const data = response.data;
-        // console.log(response);
-        console.log("received",data);
+       
+     
         setFormData({
           name: data.name || "",
           email: data.email || "",
@@ -154,7 +154,7 @@ const EditPatientProfile = () => {
         }
       );
   
-      console.log("Profile updated:", response.data);
+      
       navigate("/");
       toast.success("Profile updated successfully!");
     } catch (error) {

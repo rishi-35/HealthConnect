@@ -242,7 +242,7 @@ export default function Patient() {
             <img src="/chatai.png" alt="Chat with Chatbot" className="w-48 h-48 object-cover mx-auto" />
             <div className=" p-6 text-center">
               <h3 className="text-lg font-semibold mb-3">Chat with Chatbot</h3>
-              <button  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg w-full" onClick={()=>{window.open("https://dxgpt.app/?gad_source=1&gad_campaignid=22143667638&gbraid=0AAAAA-skLxtePpJKzGJelD8TBzTB06ZBH&gclid=Cj0KCQjwlYHBBhD9ARIsALRu09pt_4jk11ePCJlRUB2fs0MOeUeGInPlqG8QAhN7-f3Rzroao-rLsAUaAoWEEALw_wcB", "_blank");
+              <button  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg w-full" onClick={()=>{window.open("https://chatbot.hidocdr.com/", "_blank");
 }}> Start Chat</button>
             </div>
           </div>

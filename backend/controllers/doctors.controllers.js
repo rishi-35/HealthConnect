@@ -261,7 +261,6 @@ async function performance(req, res) {
           $lte: new Date(endDate)
         };
       }
-      console.log("reached to page");
       // Fetch completed appointments with pagination
       const appointments = await Appointment.find(query)
         .populate('patient', 'name email phone')

@@ -8,7 +8,6 @@ import LandingPage from './LandingPage';
 export default function HomePage() {
     const { user } = useAuthStore();
     
-    console.log("This is role:", user?.role);
 
     return (
         <div>

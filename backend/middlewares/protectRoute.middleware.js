@@ -17,7 +17,7 @@ const isProfileComplete = (doctor) => {
 
 const protectRoute = async (req, res, next) => {
   const token = req.cookies['token'];
-  // console.log("Auth Middleware: Token received:", req.cookies?.token);
+ 
 
   if (!token) {
     return res.status(401).json({ 
@@ -45,16 +45,7 @@ const protectRoute = async (req, res, next) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    // Debugging: Log profile completion factors
-    // console.log('Profile completion check:', {
-    //   specialization: !!user.specialization,
-    //   certificate: !!user.certificate,
-    //   coordinates: user.hospitalLocation?.coordinates?.length,
-    //   dateOfBirth: !!user.dateOfBirth,
-    //   gender: !!user.gender,
-    //   phone: !!user.phone,
-    //   profilePhoto: !!user.profilePhoto
-    // });
+    
 
     // Create user object with proper typing
     const userData = {
@@ -67,7 +58,6 @@ const protectRoute = async (req, res, next) => {
         : Boolean(user.phone) // Example patient completion check
     };
 
-    // console.log("Authenticated user:", userData);
     req.user = userData;
     req.token = token;
     next();

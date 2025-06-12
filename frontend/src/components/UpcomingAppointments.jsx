@@ -15,7 +15,7 @@ export default function UpcomingAppointments() {
   const [longitude, setLongitude] = useState(null);
 
   useEffect(() => {
-    console.log("useEffect Triggered");
+    
 
     const fetchAppointments = async (lat, lon) => {
       try {
@@ -23,7 +23,7 @@ export default function UpcomingAppointments() {
           params: { latitude: lat, longitude: lon },
           withCredentials: true,
         });
-        console.log("API Response:", response.data);
+      
 
         if (Array.isArray(response.data)) {
           setAppointments(response.data);
@@ -43,7 +43,7 @@ export default function UpcomingAppointments() {
         (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          console.log("Detected Location:", lat, lon);
+        
           setLatitude(lat);
           setLongitude(lon);
           fetchAppointments(lat, lon);
@@ -65,7 +65,7 @@ export default function UpcomingAppointments() {
     if (latitude && longitude && doctorLat && doctorLng) {
       const url = `https://www.google.com/maps/dir/?api=1&origin=${latitude},${longitude}&destination=${doctorLat},${doctorLng}&travelmode=driving`;
       window.open(url, "_blank");
-      console.log("Redirecting to:", url); // Debug log
+     
     } else {
       alert("Unable to determine location for navigation.");
     }
