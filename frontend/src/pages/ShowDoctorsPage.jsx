@@ -44,7 +44,7 @@ const ShowDoctorsPage = () => {
   useEffect(() => {
     const fetchSpecializations = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/doctors/specialization', { withCredentials: true });
+        const response = await axios.get('/api/doctors/specialization', { withCredentials: true });
         setSpecializations(['All Doctors', ...response.data]);
       } catch (error) {
         console.error('Error fetching specializations:', error);
@@ -74,7 +74,7 @@ const ShowDoctorsPage = () => {
     const fetchTopRated = async () => {
       setLoadingTopRated(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/doctors/top-rated', { withCredentials: true });
+        const response = await axios.get('/api/doctors/top-rated', { withCredentials: true });
         const topDoctors = response.data.data || response.data;
         
         setTopRatedDoctors(Array.isArray(topDoctors) ? topDoctors : []);
@@ -128,7 +128,7 @@ const ShowDoctorsPage = () => {
         activeOnly: activeOnlyFilter // Already included, ensure it’s sent as 'true' or 'false'
       };
     
-      const response = await axios.get('http://localhost:5000/api/doctors/nearby', {
+      const response = await axios.get('/api/doctors/nearby', {
         params,
         withCredentials: true
       });

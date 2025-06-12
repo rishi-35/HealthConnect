@@ -19,7 +19,7 @@ export default function UpcomingAppointments() {
 
     const fetchAppointments = async (lat, lon) => {
       try {
-        const response = await axios.get("http://localhost:5000/api/patient/upcoming", {
+        const response = await axios.get("/api/patient/upcoming", {
           params: { latitude: lat, longitude: lon },
           withCredentials: true,
         });

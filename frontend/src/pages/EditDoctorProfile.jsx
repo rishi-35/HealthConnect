@@ -58,7 +58,7 @@ const EditDoctorProfile = () => {
     const fetchDoctorProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/doctors/profile`,
+          `/api/doctors/profile`,
           {
             withCredentials: true, // This is crucial for sending cookies
           }
@@ -159,7 +159,7 @@ const EditDoctorProfile = () => {
     });
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/doctors/update-profile",
+        "/api/doctors/update-profile",
         data,
         {
           withCredentials: true,

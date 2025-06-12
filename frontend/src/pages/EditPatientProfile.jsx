@@ -31,7 +31,7 @@ const EditPatientProfile = () => {
     const fetchPatientProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/patient/profile`,
+          `/api/patient/profile`,
           {
             withCredentials: true,
           }
@@ -144,7 +144,7 @@ const EditPatientProfile = () => {
   
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/patient/update-profile",
+        "/api/patient/update-profile",
         data,
         {
           withCredentials: true,

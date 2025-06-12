@@ -14,7 +14,7 @@ export const useAuthStore= create((set)=>({
         try {
             const {role}= credentials;
            
-            const response = await axios.post(`http://localhost:5000/api/auth/${role}/register`,credentials,{ withCredentials: true } );
+            const response = await axios.post(`/api/auth/${role}/register`,credentials,{ withCredentials: true } );
             set({user:response.data.user,isSigningUp:false})
             
             toast.success("Account created successfully");
@@ -28,7 +28,7 @@ export const useAuthStore= create((set)=>({
         try {
             const {role, email, password} = credentials;
             const response = await axios.post(
-                `http://localhost:5000/api/auth/${role}/login`,
+                `/api/auth/${role}/login`,
                 {email, password},
                 { 
                     withCredentials: true,
@@ -48,7 +48,7 @@ export const useAuthStore= create((set)=>({
     logout: async (req,res) => {
         set({isLogingout:true})
         try {
-             await axios.post(`http://localhost:5000/api/auth/logout`,{},{ withCredentials: true } )
+             await axios.post(`/api/auth/logout`,{},{ withCredentials: true } )
             set({isLogingout:false,user:null})
             toast.success("Logout is Successfull");
         } catch (error) {
@@ -59,7 +59,7 @@ export const useAuthStore= create((set)=>({
     authCheck: async () => {
         set({isCheckingAuth:true});
         try {
-            const response=await axios.get('http://localhost:5000/api/auth/authcheck',{ withCredentials: true } );
+            const response=await axios.get('/api/auth/authcheck',{ withCredentials: true } );
             set({user:response.data.user,isCheckingAuth:false})
             
         } catch (error) {

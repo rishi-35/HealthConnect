@@ -43,7 +43,7 @@ const DoctorDashboard = () => {
   // Fetch availability
   const fetchAvailability = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/doctors/availability", {
+      const res = await axios.get("/api/doctors/availability", {
         withCredentials: true,
       });
       setIsAvailable(res.data.isAvailable);
@@ -58,7 +58,7 @@ const DoctorDashboard = () => {
     setAvailabilityLoading(true);
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/doctors/availability",
+        "/api/doctors/availability",
         {},
         { withCredentials: true }
       );
@@ -78,7 +78,7 @@ const DoctorDashboard = () => {
       const today = new Date();
       const start = startOfDay(today).toISOString();
       const end = endOfDay(today).toISOString();
-      const res = await axios.get("http://localhost:5000/api/doctors/performance", {
+      const res = await axios.get("/api/doctors/performance", {
         params: { startDate: start, endDate: end, page: 1, limit: 10 },
         withCredentials: true,
       });
@@ -92,7 +92,7 @@ const DoctorDashboard = () => {
   // Fetch today's appointments
   const fetchTodayAppointments = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/appointments/all", {
+      const res = await axios.get("/api/appointments/all", {
         withCredentials: true,
       });
       setTodayAppointments(res.data.appointments || []);

@@ -59,7 +59,7 @@ const AppointmentBookingPage = () => {
       setLoadingDoctor(true);
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/doctors/${id}`,
+          `/api/doctors/${id}`,
           { withCredentials: true }
         );
         setDoctor(response.data.doctor);
@@ -128,7 +128,7 @@ const AppointmentBookingPage = () => {
       try {
         const formattedDate = format(selectedDate, "yyyy-MM-dd");
         const response = await axios.get(
-          `http://localhost:5000/api/doctors/${id}/available-slots`,
+          `/api/doctors/${id}/available-slots`,
           {
             params: { date: formattedDate },
             withCredentials: true,
@@ -154,7 +154,7 @@ const AppointmentBookingPage = () => {
       setLoadingReviews(true);
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/doctors/${id}/reviews`,
+          `/api/doctors/${id}/reviews`,
           { withCredentials: true }
         );
         const normalizedReviews = (response.data.reviews || []).map(review => ({
@@ -210,7 +210,7 @@ const AppointmentBookingPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/appointments/book",
+        "/api/appointments/book",
         {
           doctorId: id,
           dateTime: selectedSlot.start,
@@ -283,7 +283,7 @@ const AppointmentBookingPage = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/doctors/${id}/reviews`,
+        `/api/doctors/${id}/reviews`,
         { text: reviewText, rating },
         { withCredentials: true }
       );
