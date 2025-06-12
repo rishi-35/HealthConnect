@@ -30,14 +30,22 @@ app.use((req, res, next) => {
 
 //  Set CSP header using that nonce
 app.use((req, res, next) => {
+  // res.setHeader(
+  //   'Content-Security-Policy',
+  //   "default-src 'self'; " +
+  //   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+  //   "font-src 'self' https://fonts.gstatic.com data:; " +
+  //   "img-src 'self' data: https:; " +
+  //   "connect-src 'self';"
+  // );
   res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; " +
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-    "font-src 'self' https://fonts.gstatic.com data:; " +
-    "img-src 'self' data: https:; " +
-    "connect-src 'self';"
-  );
+  'Content-Security-Policy',
+  "default-src 'self'; " +
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +  // Include 'unsafe-inline' if needed
+  "font-src 'self' https://fonts.gstatic.com data:; " +
+  "img-src 'self' https: data:;"
+);
+
   next();
 });
 
