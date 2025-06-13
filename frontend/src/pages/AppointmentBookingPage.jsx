@@ -360,7 +360,7 @@ const AppointmentBookingPage = () => {
                   <img
                     src={
                       doctor.profilePhoto
-                        ? `http://localhost:5000${doctor.profilePhoto}`
+                        ? `https://healthconnect-w2m6.onrender.com${doctor.profilePhoto}`
                         : "/defaultDoctor.jpg"
                     }
                     alt={doctor.name}

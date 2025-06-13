@@ -8,7 +8,7 @@ export default defineConfig({
   ],
   proxy: {
     '/api': {
-      target: 'http://localhost:5000', // Replace with your backend server URL
+      target: 'https://healthconnect-w2m6.onrender.com', // Replace with your backend server URL
       changeOrigin: true,
       secure: false,
     },

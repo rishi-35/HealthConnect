@@ -60,7 +60,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Static uploads
 const uploadsPath = path.resolve(__dirname, 'uploads');
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static(uploadsPath, {
+  setHeaders: (res) => {
+    res.setHeader("Content-Security-Policy", "img-src 'self' https: data: blob:;");
+  }
+}));
+
 
 // API routes
 app.use('/api/auth', authRoutes);

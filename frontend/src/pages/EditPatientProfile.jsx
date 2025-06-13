@@ -198,7 +198,7 @@ const EditPatientProfile = () => {
                 <img
                   src={
                     typeof formData.profilePhoto === "string"
-                      ? `http://localhost:5000${formData.profilePhoto}`
+                      ? `https://healthconnect-w2m6.onrender.com${formData.profilePhoto}`
                       : formData.profilePhoto instanceof File
                       ? URL.createObjectURL(formData.profilePhoto)
                       : "https://via.placeholder.com/150"

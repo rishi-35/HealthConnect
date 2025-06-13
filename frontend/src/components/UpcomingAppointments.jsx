@@ -101,7 +101,7 @@ export default function UpcomingAppointments() {
               const doctorLat = appointment.doctor?.hospitalLocation?.latitude;
               const doctorLng = appointment.doctor?.hospitalLocation?.longitude;
               const doctorProfilePhoto = appointment.doctor?.profilePhoto
-                ? `http://localhost:5000${appointment.doctor.profilePhoto}`
+                ? `https://healthconnect-w2m6.onrender.com${appointment.doctor.profilePhoto}`
                 : "https://placehold.co/150x150";
 
               return (

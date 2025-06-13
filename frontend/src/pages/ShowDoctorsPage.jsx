@@ -310,8 +310,9 @@ const ShowDoctorsPage = () => {
                    
                       <div className="flex items-start">
                        
+                      {console.log("this is doc url ", doctor.profilePhoto ? `https://healthconnect-w2m6.onrender.com${doctor.profilePhoto}` : '/defaultDoctor.jpg')}
                         <img
-                          src={doctor.profilePhoto ? `http://localhost:5000${doctor.profilePhoto}` : '/defaultDoctor.jpg'}
+                          src={doctor.profilePhoto ? `https://healthconnect-w2m6.onrender.com${doctor.profilePhoto}` : '/defaultDoctor.jpg'}
                           alt={doctor.name}
                           className="w-24 h-32 rounded-md object-cover border-2 border-yellow-200 shadow-sm mr-4"
                         />
@@ -400,7 +401,7 @@ const ShowDoctorsPage = () => {
                     >
                       <div className="flex items-start">
                         <img
-                          src={doctor.profilePhoto ? `http://localhost:5000${doctor.profilePhoto}`: '/defaultDoctor.jpg'}
+                          src={doctor.profilePhoto ? `https://healthconnect-w2m6.onrender.com${doctor.profilePhoto}`: '/defaultDoctor.jpg'}
                           alt={doctor.name}
                           className="w-24 h-32 rounded-md object-cover border-2 border-blue-200 shadow-sm mr-4"
                         />
